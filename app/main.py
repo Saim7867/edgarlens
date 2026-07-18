@@ -12,6 +12,7 @@ ALLOW_DEMO_KEYS=true. Mint real keys: python scripts/make_key.py <name> <tier>
 Run:  python -m uvicorn app.main:app --reload
 """
 import re
+import secrets
 
 import httpx
 from fastapi import Depends, FastAPI, Header, HTTPException, Path, Query
@@ -49,8 +50,18 @@ async def _shutdown() -> None:
 
 
 # --- Auth + per-key rate limit ---------------------------------------------
-async def authorize(x_api_key: str = Header(default="")) -> str:
-    tier = keystore.verify(x_api_key)
+async def authorize(
+    x_api_key: str = Header(default=""),
+    x_rapidapi_proxy_secret: str = Header(default=""),
+) -> str:
+    # Path 1: request came through RapidAPI's proxy (they billed the customer).
+    if config.RAPIDAPI_PROXY_SECRET and secrets.compare_digest(
+        x_rapidapi_proxy_secret, config.RAPIDAPI_PROXY_SECRET
+    ):
+        tier = "pro"
+    # Path 2: one of our own keys.
+    else:
+        tier = keystore.verify(x_api_key)
     if tier is None:
         raise HTTPException(status_code=401, detail="Invalid or missing X-API-Key.")
     # Rate-limit by the key's HASH so raw keys never sit in limiter memory.
