@@ -44,3 +44,4 @@ TIERS = {
 TICKER_PATTERN = r"^[A-Za-z][A-Za-z0-9.\-]{0,9}$"   # AAPL, BRK.B, RDS-A ...
 ALLOWED_FORMS = {"10-K", "10-Q", "8-K", "4", "13F-HR", "S-1", "DEF 14A", "20-F", "6-K"}
 MAX_FILINGS_LIMIT = 50
+RAPIDAPI_PROXY_SECRET = os.getenv("RAPIDAPI_PROXY_SECRET", "")
