@@ -83,6 +83,9 @@ def _validate_form(form: str | None) -> str | None:
         )
     return form
 
+@app.get("/", include_in_schema=False)
+async def root():
+    return {"service": "EdgarLens API", "docs": "/docs"}
 
 # --- Routes -----------------------------------------------------------------
 @app.get("/health")
