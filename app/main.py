@@ -99,7 +99,7 @@ async def root():
     return {"service": "EdgarLens API", "docs": "/docs"}
 
 # --- Routes -----------------------------------------------------------------
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health() -> dict:
     return {"status": "ok"}
 
